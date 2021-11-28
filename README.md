@@ -2,14 +2,39 @@
 Deploys three tier Environment Virtual Machines to your provided VNet
 # Getting Started
 This Terraform module deploys Virtual Machines in Azure with the following characteristics:
-* Ability to specify 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+* Network terraform scripts deploy virtual network and create three subnet for web, app and db
+* Ability to deploy windows and linux virtual machines
+* VM nics attached to a single virtual network subnet of your choice (web,app and db subnet) based on env value
+# Module Usage
+```
+terraform {
+  backend "azurerm" {
+    resource_group_name     = "Resourcegroupname"
+    storage_account_name    = "storageaccountname"
+    container_name          = "containername"
+    key                     = "terraform.tfstate"
+  }
+  required_providers {
+    azurerm                 = {
+    source                  = "hashicorp/azurerm"
+    version                 = ">= 2.80.0"
+    }
+  }
+}
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+provider "azurerm" {
+  features {}
+}
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+module "vmdeploy"{
+    source                  = "./azurevm"
+    resource_group_name     = "Resourcegroupname"
+    location                = "Central US"
+    env                     = "Dev"
+    vmname                  = "terrachallengevm01"
+    os_type                 = "Linux"
+    vm_count                = 2
+    tier                    = "app"
+    vm_sku                  = "Standard_B1s"
+}
+```
